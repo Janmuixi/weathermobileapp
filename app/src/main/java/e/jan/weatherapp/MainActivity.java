@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     Button consultaBtn;
 
     String data = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +45,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 AsyncThread thread = new AsyncThread();
                 String nombreCiudad = ciudad.getText().toString();
-                thread.execute("https://api.openweathermap.org/data/2.5/weather?q=" + nombreCiudad + "&appid=2ad918c0386450a61010cf6a0ac29ef4");
+                String url = "https://api.openweathermap.org/data/2.5/weather?q=" + nombreCiudad + "&appid=2ad918c0386450a61010cf6a0ac29ef4";
+                thread.execute(url);
             }
         });
 
@@ -73,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            Log.i("RESULT",result);
             return result;
         }
 
@@ -82,45 +83,19 @@ public class MainActivity extends AppCompatActivity {
 
             super.onPostExecute(data);
             JSONObject weatherObject = null;
+            JSONObject main = null;
+            double temp = 0;
 
             try {
                 weatherObject = new JSONObject(data);
+                main = weatherObject.getJSONObject("main");
+                temp = main.getDouble("temp");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-            JSONArray weather = null;
-
-            try {
-                weather = weatherObject.getJSONArray("weather");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            JSONObject eachObject = null;
-
-            try {
-                eachObject = weather.getJSONObject(0);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            String main = null;
-
-            try {
-                main = eachObject.getString("main");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            Log.i("JSONObject", String.valueOf(weatherObject));
-            Log.i("JSONArray", String.valueOf(weather));
-            Log.i("JSONString", String.valueOf(eachObject));
-            Log.i("JSONString", String.valueOf(main));
 
             TextView textView = (TextView) findViewById(R.id.textMain);
-            textView.setText(main);
+            textView.setText(String.valueOf(temp));
         }
     }
 }
